@@ -19,27 +19,27 @@
 #include "singleton.h"
 
 namespace fs = std::filesystem;
-class logger final
+class Logger final : public Singleton<Logger>
 {
 public:
-    /// let logger like stream
-    struct log_stream : public std::ostringstream
+    /// let Logger like stream
+    struct LogStream : public std::ostringstream
     {
     public:
-        log_stream(const spdlog::source_loc &_loc, spdlog::level::level_enum _lvl, std::string_view _prefix)
+        LogStream(const spdlog::source_loc &_loc, spdlog::level::level_enum _lvl, std::string_view _prefix)
             : loc(_loc)
             , lvl(_lvl)
             , prefix(_prefix)
         {}
 
-        ~log_stream()
+        ~LogStream()
         {
             flush();
         }
 
         void flush()
         {
-            logger::get().log(loc, lvl, (prefix + str()).c_str());
+            Singleton<Logger>::Get().log(loc, lvl, (prefix + str()).c_str());
         }
 
     private:
@@ -48,14 +48,7 @@ public:
         std::string prefix;
     };
 
-public:
-    static logger &get()
-    {
-        static logger logger;
-        return logger;
-    }
-
-    bool init(std::string_view log_file_path)
+    bool Init(std::string_view log_file_path)
     {
         if (_is_inited)
             return true;
@@ -104,40 +97,40 @@ public:
         return true;
     }
 
-    void shutdown()
+    void Shutdown()
     {
         spdlog::shutdown();
     }
 
     template<typename... Args>
-    void log(const spdlog::source_loc &loc, spdlog::level::level_enum lvl, const char *fmt, const Args &...args)
+    void Log(const spdlog::source_loc &loc, spdlog::level::level_enum lvl, const char *fmt, const Args &...args)
     {
         spdlog::log(loc, lvl, fmt, args...);
     }
 
     template<typename... Args>
-    void printf(const spdlog::source_loc &loc, spdlog::level::level_enum lvl, const char *fmt, const Args &...args)
+    void Printf(const spdlog::source_loc &loc, spdlog::level::level_enum lvl, const char *fmt, const Args &...args)
     {
         spdlog::log(loc, lvl, fmt::sprintf(fmt, args...).c_str());
     }
 
-    spdlog::level::level_enum level()
+    spdlog::level::level_enum Level()
     {
         return _log_level;
     }
 
-    void set_level(spdlog::level::level_enum lvl)
+    void SetLevel(spdlog::level::level_enum lvl)
     {
         _log_level = lvl;
-        spdlog::set_level(lvl);
+        spdlog::SetLevel(lvl);
     }
 
-    void set_flush_on(spdlog::level::level_enum lvl)
+    void Flush(spdlog::level::level_enum lvl)
     {
         spdlog::flush_on(lvl);
     }
 
-    static const char *get_shortname(std::string_view path)
+    static const char *GetShortName(std::string_view path)
     {
         if (path.empty())
             return path.data();
@@ -146,12 +139,12 @@ public:
         return path.data() + ((pos == path.npos) ? 0 : pos + 1);
     }
 
-private:
-    logger() = default;
-    ~logger() = default;
+protected:
+    Logger() = default;
+    ~Logger() = default;
 
-    logger(const logger &) = delete;
-    void operator=(const logger &) = delete;
+    Logger(const Logger &) = delete;
+    void operator=(const Logger &) = delete;
 
 private:
     std::atomic_bool _is_inited = false;
@@ -159,35 +152,35 @@ private:
 };
 
 // got short filename(exlude file directory)
-#define __FILENAME__ (logger::get_shortname(__FILE__))
+#define __FILENAME__ (Logger::GetShortName(__FILE__))
 
 // use fmt lib, e.g. LOG_WARN("warn log, {1}, {1}, {2}", 1, 2);
 #define LOG_TRACE(msg, ...)                                                                                                                \
     {                                                                                                                                      \
-        if (logger::get().level() == spdlog::level::trace)                                                                           \
+        if (Singleton<Logger>::Get().Level() == spdlog::level::trace)                                                                           \
             spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, msg, ##__VA_ARGS__);                                 \
     };
-#define LOG_DEBUG(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, msg, ##__VA_ARGS__)
-#define LOG_INFO(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, msg, ##__VA_ARGS__)
-#define LOG_WARN(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, msg, ##__VA_ARGS__)
-#define LOG_ERROR(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, msg, ##__VA_ARGS__)
-#define LOG_FATAL(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, msg, ##__VA_ARGS__)
+#define LOG_DEBUG(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, msg, ##__VA_ARGS__)
+#define LOG_INFO(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, msg, ##__VA_ARGS__)
+#define LOG_WARN(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, msg, ##__VA_ARGS__)
+#define LOG_ERROR(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, msg, ##__VA_ARGS__)
+#define LOG_FATAL(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, msg, ##__VA_ARGS__)
 
 // use like sprintf, e.g. PRINT_WARN("warn log, %d-%d", 1, 2);
-#define PRINT_TRACE(msg, ...) logger::get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, msg, ##__VA_ARGS__);
-#define PRINT_DEBUG(msg, ...) logger::get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, msg, ##__VA_ARGS__);
-#define PRINT_INFO(msg, ...) logger::get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, msg, ##__VA_ARGS__);
-#define PRINT_WARN(msg, ...) logger::get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, msg, ##__VA_ARGS__);
-#define PRINT_ERROR(msg, ...) logger::get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, msg, ##__VA_ARGS__);
+#define PRINT_TRACE(msg, ...) Singleton<Logger>::Get().Printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, msg, ##__VA_ARGS__);
+#define PRINT_DEBUG(msg, ...) Singleton<Logger>::Get().Printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, msg, ##__VA_ARGS__);
+#define PRINT_INFO(msg, ...) Singleton<Logger>::Get().Printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, msg, ##__VA_ARGS__);
+#define PRINT_WARN(msg, ...) Singleton<Logger>::Get().Printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, msg, ##__VA_ARGS__);
+#define PRINT_ERROR(msg, ...) Singleton<Logger>::Get().Printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, msg, ##__VA_ARGS__);
 #define PRINT_FATAL(msg, ...)                                                                                                              \
-    logger::get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, msg, ##__VA_ARGS__);
+    Singleton<Logger>::Get().printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, msg, ##__VA_ARGS__);
 
 // use like stream , e.g. STM_WARN() << "warn log: " << 1;
-#define STM_TRACE() logger::log_stream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, "")
-#define STM_DEBUG() logger::log_stream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, "")
-#define STM_INFO() logger::log_stream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, "")
-#define STM_WARN() logger::log_stream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, "")
-#define STM_ERROR() logger::log_stream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, "")
-#define STM_FATAL() logger::log_stream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, "")
+#define STM_TRACE() Logger::LogStream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, "")
+#define STM_DEBUG() Logger::LogStream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, "")
+#define STM_INFO() Logger::LogStream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, "")
+#define STM_WARN() Logger::LogStream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, "")
+#define STM_ERROR() Logger::LogStream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, "")
+#define STM_FATAL() Logger::LogStream({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, "")
 
 #endif  // _LOGGER_HPP_
