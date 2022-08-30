@@ -16,6 +16,7 @@ if(BUILD_DEPS)
 
     INCLUDE(deps/gtest.cmake)
     INCLUDE(deps/spdlog.cmake)
+    INCLUDE(deps/lua.cmake)
 else()
     # 设置基础变量
     SET(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
