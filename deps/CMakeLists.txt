@@ -5,7 +5,9 @@ project(deps)
 # 设置基础变量
 SET(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../output)
 SET(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../third)
+SET(CMAKE_INSTALL_MESSAGE TRUE)
 MESSAGE("INSTALL_DIR: ${INSTALL_DIR} SRC_DIR:${SRC_DIR}")
 
-# INCLUDE(gtest.cmake)
+INCLUDE(gtest.cmake)
 INCLUDE(spdlog.cmake)
+INCLUDE(lua.cmake)

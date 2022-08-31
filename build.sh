@@ -7,7 +7,7 @@ function build()
     mkdir build
     cd build
     cmake  ..
-    make
+    make -j4
 }
 
 function build_deps()
@@ -16,7 +16,7 @@ function build_deps()
     mkdir build
     cd build
     cmake  -DBUILD_DEPS=true ..
-    make
+    make -j4
 }
 
 if test $1 = "-r"
