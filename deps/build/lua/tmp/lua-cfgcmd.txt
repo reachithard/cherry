@@ -1,0 +1,1 @@
+cmd='cd;/root/workspace/cherry/deps/../third/lua'

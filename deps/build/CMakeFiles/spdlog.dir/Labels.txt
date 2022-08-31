@@ -1,0 +1,13 @@
+# Target labels
+ spdlog
+# Source files and their labels
+/root/workspace/cherry/deps/build/CMakeFiles/spdlog
+/root/workspace/cherry/deps/build/CMakeFiles/spdlog.rule
+/root/workspace/cherry/deps/build/CMakeFiles/spdlog-complete.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-build.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-configure.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-download.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-install.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-mkdir.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-patch.rule
+/root/workspace/cherry/deps/build/spdlog/src/spdlog-stamp/spdlog-update.rule

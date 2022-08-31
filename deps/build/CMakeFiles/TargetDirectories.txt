@@ -1,0 +1,5 @@
+/root/workspace/cherry/deps/build/CMakeFiles/edit_cache.dir
+/root/workspace/cherry/deps/build/CMakeFiles/lua.dir
+/root/workspace/cherry/deps/build/CMakeFiles/gtest.dir
+/root/workspace/cherry/deps/build/CMakeFiles/rebuild_cache.dir
+/root/workspace/cherry/deps/build/CMakeFiles/spdlog.dir

@@ -1,0 +1,13 @@
+# Target labels
+ lua
+# Source files and their labels
+/root/workspace/cherry/deps/build/CMakeFiles/lua
+/root/workspace/cherry/deps/build/CMakeFiles/lua.rule
+/root/workspace/cherry/deps/build/CMakeFiles/lua-complete.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-build.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-configure.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-download.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-install.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-mkdir.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-patch.rule
+/root/workspace/cherry/deps/build/lua/src/lua-stamp/lua-update.rule

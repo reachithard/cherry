@@ -1,0 +1,13 @@
+# Target labels
+ gtest
+# Source files and their labels
+/root/workspace/cherry/deps/build/CMakeFiles/gtest
+/root/workspace/cherry/deps/build/CMakeFiles/gtest.rule
+/root/workspace/cherry/deps/build/CMakeFiles/gtest-complete.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-build.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-configure.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-download.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-install.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-mkdir.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-patch.rule
+/root/workspace/cherry/deps/build/gtest/src/gtest-stamp/gtest-update.rule
