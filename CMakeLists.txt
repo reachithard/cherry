@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(cherry)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 99)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -19,11 +20,16 @@ if(BUILD_DEPS)
     INCLUDE(deps/gtest.cmake)
     INCLUDE(deps/spdlog.cmake)
     INCLUDE(deps/lua.cmake)
+    INCLUDE(deps/yyjson.cmake)
 else()
 
 
     # 链接interface 便于开发
     INCLUDE(cmake/interface.cmake)
+    
+    # 一些封装 find_package
+    INCLUDE(cmake/spdlog.cmake)
+    INCLUDE(cmake/yyjson.cmake)
 
     set(CHERRY_MAJOR_VERSION 0)
     set(CHERRY_MINOR_VERSION 0)

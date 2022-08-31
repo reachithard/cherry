@@ -11,9 +11,9 @@ public:
         return instance;
     }
 
-protected:
-    Singleton() = default;
     virtual ~Singleton() = default;
+
+    Singleton() = default;
 };
 
 #endif // _SINGLETON_H_

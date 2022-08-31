@@ -22,6 +22,10 @@ namespace fs = std::filesystem;
 class Logger final : public Singleton<Logger>
 {
 public:
+    ~Logger() = default;
+
+    Logger() = default;
+
     /// let Logger like stream
     struct LogStream : public std::ostringstream
     {
@@ -39,7 +43,7 @@ public:
 
         void flush()
         {
-            Singleton<Logger>::Get().log(loc, lvl, (prefix + str()).c_str());
+            Singleton<Logger>::Get().Log(loc, lvl, (prefix + str()).c_str());
         }
 
     private:
@@ -48,7 +52,7 @@ public:
         std::string prefix;
     };
 
-    bool Init(std::string_view log_file_path)
+    bool Init(std::string_view log_file_path, bool console = true)
     {
         if (_is_inited)
             return true;
@@ -77,14 +81,17 @@ public:
             sinks.push_back(ms_sink);
 #endif //  _DEBUG
 
-            auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            consoleSink->set_level(spdlog::level::debug);
-            consoleSink->set_pattern("%s(%#): [%L %D %T.%e %P %t %!] %v");
-            sinks.push_back(consoleSink);
+            if (console) {
+                auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+                consoleSink->set_level(spdlog::level::debug);
+                consoleSink->set_pattern("%s(%#): [%l %D %T.%e %P %t %!] %v");
+                sinks.push_back(consoleSink);
+            }
+
 
             spdlog::set_default_logger(std::make_shared<spdlog::logger>("", sinks.begin(), sinks.end()));
 
-            spdlog::set_pattern("%s(%#): [%L %D %T.%e %P %t %!] %v");
+            spdlog::set_pattern("%s(%#): [%l %D %T.%e %P %t %!] %v");
             spdlog::flush_on(spdlog::level::warn);
             spdlog::set_level(_log_level);
         }
@@ -122,7 +129,7 @@ public:
     void SetLevel(spdlog::level::level_enum lvl)
     {
         _log_level = lvl;
-        spdlog::SetLevel(lvl);
+        spdlog::set_level(lvl);
     }
 
     void Flush(spdlog::level::level_enum lvl)
@@ -139,13 +146,6 @@ public:
         return path.data() + ((pos == path.npos) ? 0 : pos + 1);
     }
 
-protected:
-    Logger() = default;
-    ~Logger() = default;
-
-    Logger(const Logger &) = delete;
-    void operator=(const Logger &) = delete;
-
 private:
     std::atomic_bool _is_inited = false;
     spdlog::level::level_enum _log_level = spdlog::level::trace;
@@ -160,11 +160,11 @@ private:
         if (Singleton<Logger>::Get().Level() == spdlog::level::trace)                                                                           \
             spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, msg, ##__VA_ARGS__);                                 \
     };
-#define LOG_DEBUG(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, msg, ##__VA_ARGS__)
-#define LOG_INFO(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, msg, ##__VA_ARGS__)
-#define LOG_WARN(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, msg, ##__VA_ARGS__)
-#define LOG_ERROR(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, msg, ##__VA_ARGS__)
-#define LOG_FATAL(msg, ...) spdlog::Log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, msg, ##__VA_ARGS__)
+#define LOG_DEBUG(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::debug, msg, ##__VA_ARGS__)
+#define LOG_INFO(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::info, msg, ##__VA_ARGS__)
+#define LOG_WARN(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::warn, msg, ##__VA_ARGS__)
+#define LOG_ERROR(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::err, msg, ##__VA_ARGS__)
+#define LOG_FATAL(msg, ...) spdlog::log({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::critical, msg, ##__VA_ARGS__)
 
 // use like sprintf, e.g. PRINT_WARN("warn log, %d-%d", 1, 2);
 #define PRINT_TRACE(msg, ...) Singleton<Logger>::Get().Printf({__FILENAME__, __LINE__, __FUNCTION__}, spdlog::level::trace, msg, ##__VA_ARGS__);

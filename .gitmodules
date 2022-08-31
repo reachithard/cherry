@@ -7,3 +7,6 @@
 [submodule "third/lua"]
 	path = third/lua
 	url = git@github.com:reachithard/lua.git
+[submodule "third/yyjson"]
+	path = third/yyjson
+	url = git@github.com:ibireme/yyjson.git

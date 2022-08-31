@@ -6,7 +6,7 @@ function build()
     rm -rf build/
     mkdir build
     cd build
-    cmake  ..
+    cmake  -DCMAKE_VERBOSE_MAKEFILE=on ..
     make -j4
 }
 
@@ -15,7 +15,7 @@ function build_deps()
     rm -rf build/
     mkdir build
     cd build
-    cmake  -DBUILD_DEPS=true ..
+    cmake  -DBUILD_DEPS=true -DCMAKE_VERBOSE_MAKEFILE=on ..
     make -j4
 }
 
