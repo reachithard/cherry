@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include "service.h"
 #include "lua_service.h"
+#include "worker.h"
 
 namespace Log {
 static std::unordered_map<std::string, spdlog::level::level_enum> g_logLevel =
@@ -44,7 +45,7 @@ public:
         for (uint32_t idx = 0; idx < thCnt; idx++) {
             workers.emplace_back(std::make_unique<Worker>(std::string("worker") + std::to_string(idx)));
 
-            // 加上定时器
+            // TODO 加上定时器
         }
 
         for (uint32_t idx = 0; idx < workers.size(); idx++) {
@@ -52,7 +53,7 @@ public:
         }
 
         // 进行bootstrap启动
-        for (uint32_t idx = 0; idx < ptr->items.size(), idx++) {
+        for (uint32_t idx = 0; idx < ptr->items.size(); idx++) {
             std::unique_ptr<ServiceConf> confPtr = std::make_unique<ServiceConf>();
             confPtr->type = ptr->items[idx]->type;
             confPtr->name = "bootstrap";
@@ -72,41 +73,6 @@ public:
             /* code */
         }
         return 0;
-    }
-
-    void NewService(std::unique_ptr<ServiceConf> conf)
-    {
-        Worker *w = GetWorker(conf->threadid);
-        if (nullptr != w)
-        {
-            w->SetShared(false);
-        }
-        else
-        {
-            w = NextWorker();
-        }
-        w->NewService(std::move(conf));
-    }
-
-    static uint32_t WorkerId(uint32_t serviceid)
-    {
-        return ((serviceid >> 24) & 0xFF);
-    }
-
-    Worker *GetWorker(uint32_t workerid, uint32_t serviceid = 0) const
-    {
-        if (workerid == 0)
-        {
-            workerid = WorkerId(serviceid);
-        }
-
-        if ((workerid <= 0 || workerid > static_cast<uint32_t>(workers.size())))
-        {
-            return nullptr;
-        }
-
-        --workerid;
-        return workers[workerid].get();
     }
 
     Worker *NextWorker()
@@ -139,6 +105,41 @@ public:
         return workers[min_count_workerid - 1].get();
     }
 
+    Worker *GetWorker(uint32_t workerid, uint32_t serviceid = 0) const
+    {
+        if (workerid == 0)
+        {
+            workerid = WorkerId(serviceid);
+        }
+
+        if ((workerid <= 0 || workerid > static_cast<uint32_t>(workers.size())))
+        {
+            return nullptr;
+        }
+
+        --workerid;
+        return workers[workerid].get();
+    }
+
+    void NewService(std::unique_ptr<ServiceConf> conf)
+    {
+        Worker *w = GetWorker(conf->threadid);
+        if (nullptr != w)
+        {
+            w->SetShared(false);
+        }
+        else
+        {
+            w = NextWorker();
+        }
+        w->NewService(std::move(conf));
+    }
+
+    static uint32_t WorkerId(uint32_t serviceid)
+    {
+        return ((serviceid >> 24) & 0xFF);
+    }
+
     std::unique_ptr<Service> MakeService(const std::string &type) {
         auto iter = serviceType.find(type);
         if (iter != serviceType.end())
@@ -150,10 +151,10 @@ public:
 
 private:
     void RegisterServiceType() {
-        serviceType.emplace(std::make_pair("lua", []() -> std::unique_ptr<Service> { return std::make_unique<LuaService>(); }));
+        // serviceType.emplace("lua", []() -> std::unique_ptr<Service> { return std::make_unique<LuaService>(); });
     }
     std::vector<std::unique_ptr<Worker>> workers;
-    std::unordered_map<std::string, std::function<std::unique_ptr<Service>>> serviceType;
+    std::unordered_map<std::string, std::function<std::unique_ptr<Service>()>> serviceType;
     bool serverRun = true;
 };
 

@@ -4,6 +4,8 @@
 #include <numeric>
 #include <limits>
 
+#include "lua.hpp"
+
 #include "service.h"
 
 class LuaService final : public Service
@@ -14,9 +16,7 @@ public:
     ~LuaService() {}
 
 private:
-    bool Init(const ServiceConf &conf) override {
-
-    }
+    bool Init(const ServiceConf &conf) override;
 
     void Dispatch(class Message *msg) override {
 
@@ -26,8 +26,10 @@ private:
 
 public:
     size_t mem = 0;
-    size_t mem_limit = std::numeric_limits<size_t>::max();
-    size_t mem_report = 8 * 1024 * 1024;
+    size_t memlimit = std::numeric_limits<size_t>::max();
+    size_t memreport = 8 * 1024 * 1024;
+
+    lua_State *L;
 
     // static lua_service *get(lua_State *L);
 

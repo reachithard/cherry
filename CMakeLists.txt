@@ -8,6 +8,10 @@ set(CMAKE_C_STANDARD 99)
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 option(BUILD_TESTS "Build unit tests." ON)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+message("cmake_module_path: ${CMAKE_MODULE_PATH}")
+
 # 设置基础变量
 SET(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/output)
 SET(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third)
@@ -30,6 +34,7 @@ else()
     # 一些封装 find_package
     INCLUDE(cmake/spdlog.cmake)
     INCLUDE(cmake/yyjson.cmake)
+    INCLUDE(cmake/lua.cmake)
 
     set(CHERRY_MAJOR_VERSION 0)
     set(CHERRY_MINOR_VERSION 0)

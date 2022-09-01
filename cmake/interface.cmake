@@ -28,6 +28,8 @@ ADD_LIBRARY(intf INTERFACE)
 TARGET_INCLUDE_DIRECTORIES(intf INTERFACE 
                         ${BASE_DIR}/src/base
                         ${BASE_DIR}/src/bind
+                        ${BASE_DIR}/src/bind/lua/lib
+                        ${BASE_DIR}/src/bind/lua/service
                         ${BASE_DIR}/src/network
                         ${BASE_DIR}/src/utils)
 
